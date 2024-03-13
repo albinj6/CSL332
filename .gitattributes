@@ -1,0 +1,2 @@
+# Set C files to use LF line endings
+*.c text eol=lf
