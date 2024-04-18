@@ -1,5 +1,3 @@
-
-
 #include <stdio.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -28,37 +26,33 @@ void func(int connfd)
             break;
         }
         f = atoi(buff);
-        if (f != next)
-        {
-            printf("Frame %d discarded\n", f);
+        c = rand() % 3;
+        switch (c){
+        case 0:
+            printf("Frame %d not received\n",f);
+            ack=-1;
+            printf("Negative Acknowledgement sent: %d\n",f);
+           	bzero(buff, MAX);
+            snprintf(buff, sizeof(buff), "%d", ack);
+            send(connfd, buff, sizeof(buff), 0);
+            break;
+        case 1:
+            ack = f;
+            sleep(2);
+            printf("Frame %d received\nAcknowledgement sent: %d\n", f, ack);
             bzero(buff, MAX);
             snprintf(buff, sizeof(buff), "%d", ack);
             send(connfd, buff, sizeof(buff), 0);
-            continue;
-        }
-        c = rand() % 3;
-        switch (c)
-        {
-            case 0:
-                // printf("Frame %d not received\n",f);
-                break;
-            case 1:
-                ack = f;
-                sleep(2);
-                printf("Frame %d received\nAcknowledement sent: %d\n", f, ack);
-                bzero(buff, MAX);
-                snprintf(buff, sizeof(buff), "%d", ack);
-                send(connfd, buff, sizeof(buff), 0);
-                next = ack + 1;
-                break;
-            case 2:
-                ack = f;
-                printf("Frame %d received\nAcknowledement sent: %d\n", f, ack);
-                bzero(buff, MAX);
-                snprintf(buff, sizeof(buff), "%d", ack);
-                send(connfd, buff, sizeof(buff), 0);
-                next = ack + 1;
-                break;
+            next = ack + 1;
+            break;
+        case 2:
+            ack = f;
+            printf("Frame %d received\nAcknowledgement sent: %d\n", f, ack);
+            bzero(buff, MAX);
+            snprintf(buff, sizeof(buff), "%d", ack);
+            send(connfd, buff, sizeof(buff), 0);
+            next = ack + 1;
+            break;
         }
     }
 }
@@ -104,5 +98,3 @@ void main()
     func(connfd);
     close(sockfd);
 }
-
-
